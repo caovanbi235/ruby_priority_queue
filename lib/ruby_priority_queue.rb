@@ -14,6 +14,7 @@ module RubyPriorityQueue
   # - `pop`: Removes and returns the item with the highest priority.
   # - `empty?`: Checks if the queue is empty.
   # - `peek`: Returns the item with the highest priority without removing it.
+  # - `size`: Returns the number of elements in the queue.
   #
   # Example usage:
   #   pq = RubyPriorityQueue::PriorityQueue.new
@@ -21,15 +22,28 @@ module RubyPriorityQueue
   #   pq.push("task2", 2)
   #   pq.pop # => ["task1", 1]
   class PriorityQueue
+    # The Node class represents an element in the priority queue.
+    # Each node contains an item and its associated priority.
+    #
+    # The Node class includes the Comparable module to allow comparison
+    # between nodes based on their priority.
     class Node
       include Comparable
       attr_accessor :item, :priority
 
+      # Initializes a new Node with the given item and priority.
+      #
+      # @param item [Object] the item to be stored in the node
+      # @param priority [Integer] the priority of the item
       def initialize(item, priority)
         @item = item
         @priority = priority
       end
 
+      # Compares this node with another node based on their priority.
+      #
+      # @param other [Node] the other node to compare with
+      # @return [Integer] -1, 0, or 1 if this node's priority is less than, equal to, or greater than the other node's priority
       def <=>(other)
         priority <=> other.priority
       end
