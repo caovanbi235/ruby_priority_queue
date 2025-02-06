@@ -21,55 +21,77 @@ module RubyPriorityQueue
   #   pq.push("task2", 2)
   #   pq.pop # => ["task1", 1]
   class PriorityQueue
+    class Node
+      include Comparable
+      attr_accessor :item, :priority
+
+      def initialize(item, priority)
+        @item = item
+        @priority = priority
+      end
+
+      def <=>(other)
+        priority <=> other.priority
+      end
+    end
+
     def initialize
       @heap = []
     end
 
-    def push(item, priority)
-      @heap << [item, priority]
+    def push(item = nil, priority = nil, **kwargs)
+      item ||= kwargs[:item]
+      priority ||= kwargs[:priority]
+      @heap << Node.new(item, priority)
       bubble_up(@heap.size - 1)
     end
 
+    # @return [Array] an array containing the item and its priority
     def pop
       return if @heap.empty?
 
       swap(0, @heap.size - 1)
       min = @heap.pop
       bubble_down(0)
-      min
+      [min.item, min.priority]
     end
 
     def empty?
       @heap.empty?
     end
 
+    # @return [Array] an array containing the item and its priority
     def peek
-      @heap[0]
+      [@heap[0].item, @heap[0].priority]
+    end
+
+    def size
+      @heap.size
     end
 
     private
 
     def bubble_up(index)
       parent_index = (index - 1) / 2
-      return if index <= 0 || @heap[parent_index][1] <= @heap[index][1]
+      return if index <= 0 || @heap[parent_index] <= @heap[index]
 
       swap(index, parent_index)
       bubble_up(parent_index)
     end
 
     def bubble_down(index)
-      child_index = (index * 2) + 1
-      return if child_index >= @heap.size
+      left_child_index = (index * 2) + 1
+      return if left_child_index >= @heap.size
 
-      right_child_index = child_index + 1
-      if right_child_index < @heap.size && @heap[right_child_index][1] < @heap[child_index][1]
-        child_index = right_child_index
+      right_child_index = left_child_index + 1
+      if right_child_index < @heap.size && @heap[right_child_index] < @heap[left_child_index]
+        left_child_index = right_child_index
       end
 
-      return if @heap[index][1] <= @heap[child_index][1]
+      return if @heap[index] <= @heap[left_child_index]
 
-      swap(index, child_index)
-      bubble_down(child_index)
+      swap(index, left_child_index)
+      bubble_down(left_child_index)
     end
 
     def swap(source, target)
